@@ -1,0 +1,18 @@
+/* You can add component-specific styles here */
+
+@keyframes blink {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.live-tag-blinking {
+  animation: blink 1s infinite;
+}
+
+/* 全局修复Ant Design导航栏header被遮挡问题 */
+.ant-layout-header {
+  z-index: 1001 !important;
+  position: sticky !important;
+  top: 0;
+} 

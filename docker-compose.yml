@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: ketu-postgres-db
+    restart: always
+    environment:
+      - POSTGRES_USER=ketu_user
+      - POSTGRES_PASSWORD=ketu_password
+      - POSTGRES_DB=ketu_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # The init script will be created in the next step
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ketu_user -d ketu_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: ketu-backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5555:5001"
+    environment:
+      - DATABASE_URL=postgres://ketu_user:ketu_password@db:5432/ketu_db
+      - PORT=5001
+      - JWT_SECRET=aVerySecretAndLongKeyForJWT # Please change this in production
+    volumes:
+      - ./backend:/app
+      - /app/node_modules # Anonymize the node_modules directory to avoid overwriting container's node_modules with host's
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ketu-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Anonymize the node_modules directory
+
+volumes:
+  postgres_data: 
