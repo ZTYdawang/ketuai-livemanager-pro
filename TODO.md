@@ -1,117 +1,161 @@
-# 直播间质量智能评估系统 - 项目开发 TODO List
+# Ketu Live Score - 项目说明文档
 
-项目已完成前端 UI/UX 开发，现进入后端 API 及核心功能实现阶段。
-
----
-
-### ✅ 阶段一：前端核心页面开发 (已完成)
-
-所有页面均已使用 React 和 Ant Design 完成，并使用拟真化 Mock 数据填充，UI/UX 已确认。
-
--   [x] **主播管理与排班 (`AnchorManagement.tsx`)**
-    -   [x] 主播信息卡片式展示与"录入新主播"功能。
-    -   [x] 实现了早上、下午、晚上三时段的拖拽排班看板。
-    -   [x] 实现了排班冲突检测与移除功能。
-    -   [x] 实现了历史直播记录的表格展示与状态筛选。
--   [x] **直播间管理 (`LiveRoomManagement.tsx`)**
-    -   [x] 实现了批量 URL 录入直播间功能。
-    -   [x] 实现了直播间卡片化展示，包含状态标签。
-    -   [x] 实现了直播间与主播的绑定/解绑功能。
-    -   [x] 实现了监控配置（时长、策略、采样次数）的设置功能。
--   [x] **直播数据看板 (`QualityDashboard.tsx`)**
-    -   [x] 实现了核心数据指标（总览、观众、销售额等）的实时统计展示。
-    -   [x] 实现了观众数、互动量、转化率三大排行榜。
-    -   [x] 实现了实时直播间状态卡片化展示，包含评论滚动条。
+本文档旨在详细说明 “Ketu Live Score - 直播间监控系统” 的项目结构、核心功能、技术栈及 API 接口，为后续的维护和二次开发提供清晰的指引。
 
 ---
 
-### 🚀 阶段二：后端基础与 API 开发 (下一步)
+## 1. 项目概览
 
-此阶段为当前核心任务，目标是为前端提供数据接口。
+Ketu Live Score 是一个全栈的直播间监控与管理平台。它允许用户添加、管理和监控多个直播间，并提供主播排班、屏幕录制等高级功能。项目采用前后端分离架构。
 
--   [ ] **项目基础搭建**
-    -   [ ] 初始化 Django 项目及 `api` 应用。
-    -   [ ] 配置 PostgreSQL 数据库连接。
-    -   [ ] 定义 `Anchor`, `LiveRoom`, `Schedule`, `LiveHistory`, `AssessmentReport` 五个核心数据模型。
-    -   [ ] 运行数据库迁移 (`makemigrations`, `migrate`)。
-    -   [ ] 配置 Django Admin 以便后台管理数据。
--   [ ] **主播管理 API (`/api/anchors/`, `/api/schedule/`, `/api/history/`)**
-    -   [ ] `GET /api/anchors`: 获取所有主播列表。
-    -   [ ] `POST /api/anchors`: 创建新主播。
-    -   [ ] `PUT /api/anchors/{id}`: 更新指定主播信息。
-    -   [ ] `DELETE /api/anchors/{id}`: 删除指定主播。
-    -   [ ] `GET /api/schedule?date=...`: 获取指定日期的排班数据。
-    -   [ ] `POST /api/schedule`: 更新排班数据。
-    -   [ ] `GET /api/history`: 获取历史直播记录（支持分页与筛选）。
--   [ ] **直播间管理 API (`/api/liverooms/`)**
-    -   [ ] `GET /api/liverooms`: 获取所有直播间列表。
-    -   [ ] `POST /api/liverooms/batch`: 根据 URL 批量创建直播间。
-    -   [ ] `POST /api/liverooms/{id}/bind`: 为直播间绑定主播。
-    -   [ ] `POST /api/liverooms/{id}/config`: 配置直播间的监控参数。
--   [ ] **数据看板 API (`/api/dashboard/`)**
-    -   [ ] `GET /api/dashboard/stats`: 提供看板顶部的核心统计数据。
-    -   [ ] `GET /api/dashboard/rankings`: 提供三大排行榜数据。
-    -   [ ] `GET /api/dashboard/status`: 提供所有直播间的实时状态数据。
+*   **前端 (Frontend)**: 基于 React 和 Ant Design 构建的现代化用户界面，负责用户交互和数据展示。
+*   **后端 (Backend)**: 基于 Node.js 和 Express 的 API 服务，负责处理业务逻辑、数据存储和与 Puppeteer 的交互。
 
 ---
 
-### 🧠 阶段三：核心抓取与 AI 分析 (后端核心)
+## 2. 项目结构
 
--   [ ] **技术攻关：直播抓取与录屏**
-    -   [ ] 安装并配置 Celery 和 Redis，确保异步任务队列正常工作。
-    -   [ ] 编写 Celery 任务，使用 Playwright 访问直播间 URL 并抓取元数据（标题、主播等）。
-    -   [ ] 编写 Celery 任务，使用 Playwright 实现对指定直播流的录屏功能，并保存为视频文件。
--   [ ] **技术攻关：AI 评估流程**
-    -   [ ] 集成语音转文本服务 (如 Whisper API)，创建 Celery 任务将录制的视频转为文字稿。
-    -   [ ] **提示词工程 (Prompt Engineering):** 设计详细的 Prompt，指导大语言模型（如 GPT）对文字稿进行多维度评估，并按规定格式输出 JSON 报告。
-    -   [ ] 创建 Celery 任务链，实现录屏->转录->AI分析->报告入库的全自动化流程。
+项目的核心代码分为 `backend` 和 `frontend` 两个主目录。
 
----
-
-祝您开发顺利！ 
-
----
----
-
-## 会话开发日志 - 2025年7月12日
-
-### 🎯 **核心目标：调试并修复直播录制功能**
-
-本次会话的重点是解决直播监控页面 (`LiveStreamMonitor.tsx`) 中，“开始录制”功能引发的一系列后端录制失败和前端UI状态不同步的问题。
-
-### 📜 **开发进程详细记录**
-
-**1. 问题现象分析：**
-
-*   **初始问题**：点击“录制”后，后端的 `ffmpeg` 进程几乎立即退出，录制失败，并返回 `Video codec (c) is not implemented` 错误。
-*   **衍生问题**：在调试过程中，出现了前端UI状态与后端真实状态不同步的“竞态条件”问题。具体表现为，“开始录制”按钮在点击后短暂加载，但很快又被重置回“开始录制”状态，而此时后端录制任务实际上已在运行。
-
-**2. 核心原因诊断：**
-
-*   **后端录制失败**：`ffmpeg` 错误日志明确指出，其内置的 `flv` 解复用器无法识别直播流中的视频编码格式（可能是 `h266/VVC` 等较新的编码），导致无法处理该流。
-*   **前端状态不同步**：前端在发起API请求后“乐观地”更新了UI，但随后又被一个尚未完成录制任务建立的后端状态所覆盖，导致UI“闪回”。
-
-**3. 解决方案迭代与实施：**
-
-*   **后端修复 - 绕过 `ffmpeg` 编码识别**：
-    *   **失败的尝试**：多次尝试调整 `ffmpeg` 参数（如增加 `-analyzeduration` 和 `-probesize`，更换输出容器为 `.ts`）均未成功。
-    *   **最终方案**：我们最终决定完全**绕过 `ffmpeg`**，采用最直接的方式：将服务器发来的原始数据流不经任何处理，直接用 `fs.createWriteStream` 保存为一个 `.flv` 文件。这从根本上避免了 `ffmpeg` 的编解码识别问题。
-
-*   **前端修复 - 确保状态同步**：
-    *   **重构数据加载逻辑**：我们重写了前端的 `loadRooms` 函数，使用 `Promise.all` 来**并行**获取“房间列表”和“活跃录制列表”，确保在渲染UI时，使用的是**绝对同步**的最新数据。
-    *   **引入加载状态**：为 `LiveRoom` 接口添加 `isRecordingLoading` 状态，将按钮的 `loading` 属性与其绑定，取代了之前不可靠的“乐观更新”逻辑。
-    *   **API层异步确认**：修改了后端的 `/stream-recording/start` 和 `/stop` 接口，确保它们 `await` 录制服务的异步任务完成后，再向前端返回成功的响应。
-
-### ✅ **当前状态**
-
-*   **已完成**：
-    *   后端录制服务已重构为直接流式写入文件，解决了 `ffmpeg` 录制失败的核心问题。
-    *   前端状态管理逻辑已重构，消除了UI状态更新的竞态条件。
-*   **待验证**：等待您对最新的修改进行最终测试，确认“开始/停止录制”按钮的功能和状态显示完全正常。
+```
+.
+├── backend/                  # 后端项目
+│   ├── data/                 # (Git忽略) 存放数据库文件等
+│   ├── recordings/           # (Git忽略) 存放录制的视频文件
+│   ├── src/                  # 后端源代码
+│   │   ├── db/               # 数据库连接与初始化逻辑
+│   │   ├── middleware/       # Express 中间件 (如: 身份验证)
+│   │   ├── routes/           # API 路由定义
+│   │   └── services/         # 核心服务 (如: 录制服务)
+│   ├── Dockerfile
+│   ├── package.json
+│   └── ...
+├── frontend/                 # 前端项目
+│   ├── public/               # 静态资源
+│   ├── src/                  # 前端源代码
+│   │   ├── assets/           # 图片、样式等资源
+│   │   ├── components/       # 可复用的 React 组件
+│   │   ├── pages/            # 页面级组件
+│   │   ├── services/         # API 请求服务
+│   │   └── App.tsx           # 应用主组件
+│   ├── Dockerfile
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.ts
+├── .gitignore                # Git 忽略配置
+├── docker-compose.yml        # Docker 编排文件
+└── README.md
+```
 
 ---
 
-### 📝 **下一步 TODO 清单**
+## 3. 技术栈 (Technology Stack)
 
-*   [ ] **验证修复**：请您测试最新的应用版本，重点关注“开始录制”和“停止录制”的功能，确认按钮状态在各种情况下（包括多画面视图）都能正确显示和更新。
-*   [ ] **清理文档**：确认核心功能稳定后，我将根据您的指示，清理掉项目中的无用开发文档或注释。
+**后端 (Backend):**
+
+*   **运行环境**: Node.js
+*   **Web 框架**: Express.js
+*   **数据库**: PostgreSQL (通过 `pg` 库连接)
+*   **身份认证**: JWT (JSON Web Tokens)
+*   **密码加密**: bcrypt.js
+*   **核心功能库**:
+    *   **Puppeteer**: 用于模拟浏览器行为，抓取直播流信息。
+    *   **fluent-ffmpeg**: 用于处理视频流和录制。
+    *   **Multer**: 用于处理文件上传。
+*   **开发工具**: Nodemon (用于开发环境下的热重载)
+
+**前端 (Frontend):**
+
+*   **核心框架**: React
+*   **UI 库**: Ant Design
+*   **构建工具**: Vite
+*   **编程语言**: TypeScript
+*   **路由管理**: React Router
+*   **视频播放**:
+    *   `flv.js`: 用于播放 FLV 格式的直播流。
+    *   `hls.js`: 用于播放 HLS 格式的直播流。
+*   **拖拽功能**: `@dnd-kit`
+
+---
+
+## 4. API 接口文档
+
+所有 API 的基础路径为 `/api`。需要身份认证的接口都由 `authMiddleware` 保护。
+
+### 4.1 认证 (Auth) - `/api/auth`
+
+*   **`POST /register`**: 用户注册
+    *   **Body**: `{ username, email, password, phoneNumber? }`
+    *   **Response**: 成功或失败信息。
+*   **`POST /login`**: 用户登录
+    *   **Body**: `{ account, password }` (account 可以是邮箱或手机号)
+    *   **Response**: 成功后返回 `token` 和用户信息。
+
+### 4.2 主播管理 (Anchors) - `/api/anchors`
+
+*   **`GET /`**: 获取当前用户的所有主播列表。
+*   **`POST /`**: 添加一个新主播。
+    *   **Body**: `{ name, avatar?, gender, age?, rating }`
+*   **`PUT /:id`**: 更新指定 ID 的主播信息。
+*   **`DELETE /:id`**: 删除指定 ID 的主播。
+
+### 4.3 直播间管理 (Rooms) - `/api/rooms`
+
+*   **`GET /`**: 获取用户的所有直播间，并附带当天的排班信息。
+*   **`POST /`**: 添加一个新直播间。
+    *   **Body**: `{ title, url, streamer?, platform?, description? }`
+*   **`POST /batch`**: 批量添加直播间。
+    *   **Body**: `{ rooms: [...] }`
+*   **`PUT /:id`**: 更新指定 ID 的直播间信息。
+*   **`PUT /:id/monitor`**: 更新直播间的监控状态。
+    *   **Body**: `{ is_monitored: boolean }`
+*   **`DELETE /:id`**: 删除指定 ID 的直播间。
+
+### 4.4 排班管理 (Schedules) - `/api/schedules`
+
+*   **`GET /`**: 获取排班数据。
+    *   **Query Params**: `?date=...` (可选), `?roomId=...` (可选)
+*   **`POST /`**: 创建或更新一个排班。
+    *   **Body**: `{ anchorId, date, timeSlot, roomId }`
+*   **`DELETE /`**: 删除指定排班。
+    *   **Body**: `{ anchorId, date, timeSlot, roomId? }`
+*   **`GET /conflicts`**: 检查指定主播在某天某时段是否有排班冲突。
+    *   **Query Params**: `?anchorId=...&date=...&timeSlot=...`
+
+### 4.5 直播流监控 (Stream Monitor) - `/api/stream-monitor`
+
+*   **`GET /rooms`**: 获取所有被监控的直播间列表。
+*   **`POST /rooms`**: 添加一个新的直播间到监控列表。
+    *   **Body**: `{ url, title, streamer, category }`
+*   **`PUT /rooms/:id/status`**: 更新直播间状态。
+*   **`DELETE /rooms/:id`**: 从监控列表中删除一个直播间。
+*   **`POST /rooms/:id/recording/start`**: 开始录制。
+*   **`POST /rooms/:id/recording/stop`**: 停止录制。
+*   **`POST /check-stream`**: 检查指定 URL 的直播流状态（核心功能）。
+    *   **Body**: `{ url }`
+
+### 4.6 文件上传 (Upload) - `/api/upload`
+
+*   **`POST /avatar`**: 上传主播头像。
+    *   **Body**: `FormData` 中包含 `avatar` 文件。
+    *   **Response**: `{ url: "/uploads/filename.ext" }`
+
+---
+
+## 5. 后续开发建议 (TODO)
+
+*   [ ] **完善数据库迁移**: 当前项目似乎依赖手动执行 SQL 或同步模型。建议引入一个迁移工具（如 `node-pg-migrate`）来更规范地管理数据库结构变更。
+*   [ ] **增强错误处理和日志**: 对关键的业务逻辑（特别是 `streamMonitor`）添加更详细的日志和更健壮的错误处理机制。
+*   [ ] **单元测试与集成测试**: 为核心的 API 端点和服务编写测试用例，确保代码质量和未来的重构安全。
+*   [ ] **优化 Puppeteer 使用**:
+    *   考虑将 Puppeteer 实例池化，避免频繁启动和关闭浏览器带来的性能开销。
+    *   研究目标直播平台的 API，看是否能直接通过 API 获取直播流地址，以减少对 Puppeteer 的依赖。
+*   [ ] **前端性能优化**:
+    *   对大型列表（如历史记录）使用虚拟滚动或分页加载。
+    *   使用 `React.memo` 和 `useCallback` 等 Hook 优化不必要的组件重渲染。
+*   [ ] **安全加固**:
+    *   对所有用户输入进行更严格的校验。
+    *   考虑为 API 请求添加速率限制，防止恶意攻击。
+    *   定期更新 `JWT_SECRET`，并将其存储在更安全的环境变量管理服务中。
+---
+*文档最后更新于: 2025年7月12日*
