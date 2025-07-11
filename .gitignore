@@ -25,6 +25,7 @@ yarn-error.log*
 # Data and recordings
 /backend/data/
 /backend/recordings/
+/backend/temp/
 /backend/ketu_live_score.db
 /backend/ketu_live.db
 
